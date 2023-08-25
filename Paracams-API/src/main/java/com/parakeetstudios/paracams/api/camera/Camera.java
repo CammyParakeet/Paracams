@@ -12,6 +12,9 @@ public interface Camera {
 
     int getCameraID();
 
+    void setName(String name);
+    String getName();
+
     void setPosition(Location location);
     Location getPosition();
 

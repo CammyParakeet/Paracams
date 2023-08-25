@@ -27,4 +27,7 @@ public interface Animation {
     void setInterpolationMode(InterpolationMode mode);
     InterpolationMode getInterpolationMode();
 
+    void setTweeingMode(TweeningMode mode);
+    TweeningMode getTweeningMode();
+
 }
