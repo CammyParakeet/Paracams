@@ -4,6 +4,7 @@ import com.parakeetstudios.paracams.api.camera.Camera;
 import com.parakeetstudios.paracams.api.camera.CameraSettings;
 import com.parakeetstudios.paracams.api.cinematics.AnimationController;
 import com.parakeetstudios.paracams.api.registers.CameraRegistry;
+import com.parakeetstudios.paracams.core.utils.DefaultEntities;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
@@ -52,6 +53,7 @@ public class Paracam implements Camera {
             //TODO register display entity
         }
         //TODO registry bat entity for view
+        this.viewEntityHandle = DefaultEntities.createBat(position, null);
     }
 
     @Override
