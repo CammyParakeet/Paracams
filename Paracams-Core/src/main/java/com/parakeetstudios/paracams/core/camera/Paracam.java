@@ -50,7 +50,7 @@ public class Paracam implements Camera {
     private void initializeCamera() {
         if (this.owningRegistry.getDefaultSettings().isDisplayVisible()) {
             this.displayVisible = true;
-            //TODO register display entity
+            this.displayEntityHandle = DefaultEntities.createDisplay(position, null);
         }
         //TODO registry bat entity for view
         this.viewEntityHandle = DefaultEntities.createBat(position, null);
