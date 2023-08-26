@@ -41,7 +41,7 @@ public interface CameraRegistry {
     void addListener(); //TODO
     // TODO CameraRegistryListener ...
 
-    void update(int camID); //TODO do we need?
+    void update(int camID, CameraSettings settings); //TODO do we need?
     void updateAll(Function<Camera, Camera> updateFunction);
 
 }

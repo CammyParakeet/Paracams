@@ -29,6 +29,10 @@ public interface Camera {
     void hideDisplay();
     boolean isDisplayVisible();
 
+    //TODO do we need these getters or only use field?
+    void setCameraSettings(CameraSettings settings);
+    CameraSettings getCameraSettings();
+
     void attachPlayer(Player player);
     void detachPlayer(Player player);
     boolean isPlayerAttached(Player player);
