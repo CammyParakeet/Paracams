@@ -21,6 +21,9 @@ public interface Camera {
     void setOrigin(Location location);
     Location getOrigin();
 
+    boolean spawn();
+    void despawn();
+
     void pan();
     void tilt();
     void rotate();
@@ -46,6 +49,7 @@ public interface Camera {
     void createMotionController();
     void addMotionController(AnimationController controller);
     AnimationController getMotionController(int id, Camera owner);
+    boolean isPlayingAnimation();
 
     //TODO setup animation manager of some sort
 

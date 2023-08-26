@@ -23,11 +23,13 @@ public class Paracam implements Camera {
     private Location position;
     private Location origin;
     private CameraSettings cameraSettings;
-    private boolean displayVisible;
-    private boolean showName;
     private List<Player> attachedPlayers;
     private CameraRegistry owningRegistry;
     private List<AnimationController> animationControllers;
+
+    private boolean displayVisible;
+    private boolean showName;
+    private boolean isMoving;
 
     private Entity viewEntityHandle;
     private Entity displayEntityHandle;
@@ -89,6 +91,16 @@ public class Paracam implements Camera {
     @Override
     public Location getOrigin() {
         return this.origin;
+    }
+
+    @Override
+    public boolean spawn() {
+        return false;
+    }
+
+    @Override
+    public void despawn() {
+
     }
 
     @Override
@@ -191,5 +203,10 @@ public class Paracam implements Camera {
     public AnimationController getMotionController(int id, Camera owner) {
         //TODO
         return null;
+    }
+
+    @Override
+    public boolean isPlayingAnimation() {
+        return false;
     }
 }
