@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -30,19 +31,18 @@ public class ParacamRegistry implements CameraRegistry {
     }
 
     @Override
-    public void spawnCamera(Location position) {
-        spawnCamera(null, position);
+    public Camera createCamera(Location position) {
+        return createCamera(null, position);
     }
 
     @Override
-    public void spawnCamera(String name, Location position) {
+    public Camera createCamera(String name, Location position) {
+        Objects.requireNonNull(position, "Position cannot be null");
+
         Paracam cam = createParacam(MathUtils.genRandInt(), name, position);
         registerCamera(cam);
-        if (cam.spawn()) {
-            Paralog.info("Camera with id: " + cam.getCameraID() + " spawned at: " + position);
-        } else {
-            Paralog.severe("Camera with id: " + cam.getCameraID() + " failed to spawn");
-        }
+
+        return cam;
     }
 
     @Override

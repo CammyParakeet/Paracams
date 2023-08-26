@@ -21,7 +21,7 @@ public interface Camera {
     void setOrigin(Location location);
     Location getOrigin();
 
-    boolean spawn();
+    void spawn();
     void despawn();
 
     void pan();

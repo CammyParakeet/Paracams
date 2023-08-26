@@ -17,6 +17,8 @@ public final class ParacamsAPI {
         return InstanceHolder.instance;
     }
 
+    public CameraRegistry getCameraRegistry() { return this.cameraRegistry; }
+
     public void onEnable(CameraRegistry registry) {
         synchronized (lock) {
             if (this.cameraRegistry == null) {

@@ -94,8 +94,8 @@ public class Paracam implements Camera {
     }
 
     @Override
-    public boolean spawn() {
-        return false;
+    public void spawn() {
+
     }
 
     @Override

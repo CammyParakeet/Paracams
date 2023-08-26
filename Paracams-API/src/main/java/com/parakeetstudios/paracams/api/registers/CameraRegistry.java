@@ -11,8 +11,10 @@ import java.util.function.Predicate;
 
 public interface CameraRegistry {
 
-    void spawnCamera(Location position);
-    void spawnCamera(String name, Location position);
+    Camera createCamera(Location position);
+    Camera createCamera(String name, Location position);
+    //TODO any other creation conditions
+
     void registerCamera(Camera cam);
     void remove(int camID);
     void remove(Camera cam);
