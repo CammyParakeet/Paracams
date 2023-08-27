@@ -53,4 +53,6 @@ public interface Camera {
 
     //TODO setup animation manager of some sort
 
+    String simpleString();
+
 }

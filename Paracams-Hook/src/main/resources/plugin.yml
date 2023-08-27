@@ -1,5 +1,5 @@
 name: Paracams
-main: com.parakeetstudios.parabots.hook.ParacamPlugin
+main: com.parakeetstudios.paracams.hook.ParacamPlugin
 version: 1.0.0
 load: STARTUP
 api-version: 1.20

@@ -15,6 +15,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static com.parakeetstudios.paracams.core.utils.DefaultEntities.createBat;
+import static com.parakeetstudios.paracams.core.utils.DefaultEntities.createSimpleDisplay;
+import static com.parakeetstudios.paracams.core.utils.MathUtils.clamp;
+
 public class Paracam implements Camera {
 
     private final int cameraID;
@@ -42,7 +46,6 @@ public class Paracam implements Camera {
         this.attachedPlayers = new ArrayList<>();
         this.animationControllers = new ArrayList<>();
         this.owningRegistry = registry;
-        initializeCamera();
     }
 
     public Paracam(int cameraID, @NotNull Location position, CameraRegistry registry) {
@@ -50,12 +53,12 @@ public class Paracam implements Camera {
     }
 
     private void initializeCamera() {
-        if (this.owningRegistry.getDefaultSettings().isDisplayVisible()) {
-            this.displayVisible = true;
-            this.displayEntityHandle = DefaultEntities.createDisplay(position, null);
-        }
-        //TODO registry bat entity for view
-        this.viewEntityHandle = DefaultEntities.createBat(position, null);
+//        if (this.owningRegistry.getDefaultSettings().isDisplayVisible()) {
+//            this.displayVisible = true;
+//            this.displayEntityHandle = DefaultEntities.createDisplay(position, null);
+//        }
+        this.viewEntityHandle = createBat(position, null);
+        this.displayEntityHandle = createSimpleDisplay(origin, null);
     }
 
     @Override
@@ -95,7 +98,7 @@ public class Paracam implements Camera {
 
     @Override
     public void spawn() {
-
+        initializeCamera();
     }
 
     @Override
@@ -209,4 +212,22 @@ public class Paracam implements Camera {
     public boolean isPlayingAnimation() {
         return false;
     }
+
+    @Override
+    public String simpleString() {
+        return "Paracam{" +
+                "ID: " + cameraID +
+                ", name: " + name +
+                ", position: " + "[" + clamp(position.getX(), 2) +
+                    ", " + clamp(position.getY(), 2) +
+                    ", " + clamp(position.getZ(), 2) +
+                    "]" +
+                '}';
+    }
+
+    @Override
+    public String toString() {
+        return simpleString();
+    }
+
 }
