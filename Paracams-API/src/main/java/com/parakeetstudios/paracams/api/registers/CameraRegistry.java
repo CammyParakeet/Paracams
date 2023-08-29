@@ -5,6 +5,7 @@ import com.parakeetstudios.paracams.api.camera.CameraSettings;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 
 import java.util.List;
 import java.util.function.Function;
@@ -32,6 +33,7 @@ public interface CameraRegistry {
     void hideCamera(int camID);
     void showAllCameras();
     void hideAllCameras();
+    void hideAllViewHandlesFromPlayer(Player p, Plugin pl);
 
     void activateCamera(int camID);
     void pauseCamera(int camID);

@@ -1,19 +1,22 @@
 package com.parakeetstudios.paracams.core.registers;
 
+import com.parakeetstudios.paracams.api.ParacamsAPI;
 import com.parakeetstudios.paracams.api.camera.Camera;
 import com.parakeetstudios.paracams.api.camera.CameraSettings;
 import com.parakeetstudios.paracams.api.registers.CameraRegistry;
 import com.parakeetstudios.paracams.api.registers.SceneRegistry;
 import com.parakeetstudios.paracams.core.camera.Paracam;
 import com.parakeetstudios.paracams.core.utils.MathUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.Color;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -25,7 +28,7 @@ import java.util.function.Predicate;
  */
 public class ParacamRegistry implements CameraRegistry {
 
-    private final ConcurrentHashMap<Integer, Camera> cameras = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<Integer, Camera> cameras = new ConcurrentHashMap<>();
 
     private Paracam createParacam(int id, String name, @NotNull Location position, Color color) {
         return new Paracam(id, name, position, this, color);
@@ -48,6 +51,7 @@ public class ParacamRegistry implements CameraRegistry {
         // id limit in config?
         Paracam cam = createParacam(MathUtils.genRandInt(1000), name, position, color);
         registerCamera(cam);    // register instantly by default
+
         return cam;
     }
 
@@ -57,7 +61,8 @@ public class ParacamRegistry implements CameraRegistry {
     @Override
     public void remove(int camID) {
         try {
-            this.cameras.remove(camID);
+            cameras.get(camID).despawn();
+            cameras.remove(camID);
         } catch (Exception e) {
             //TODO correct handle
             e.printStackTrace();
@@ -124,6 +129,11 @@ public class ParacamRegistry implements CameraRegistry {
     }
 
     @Override
+    public void hideAllViewHandlesFromPlayer(Player p, Plugin pl) {
+        getAllCameras().forEach(cam -> cam.hideViewForPlayer(p, pl));
+    }
+
+    @Override
     public void activateCamera(int camID) {
         //TODO start animations
     }
@@ -165,9 +175,8 @@ public class ParacamRegistry implements CameraRegistry {
 
     @Override
     public void clear() {
-        //TODO should we be clearing a final field
-        // or make it not final?
-        //this.cameras = null;
+        cameras.values().forEach(Camera::despawn);
+        cameras = null;
     }
 
     @Override

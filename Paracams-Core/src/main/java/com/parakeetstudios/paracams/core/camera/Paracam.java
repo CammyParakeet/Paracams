@@ -11,6 +11,7 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -66,7 +67,13 @@ public class Paracam implements Camera {
 //            this.displayEntityHandle = DefaultEntities.createDisplay(position, null);
 //        }
         this.viewEntityHandle = createBat(position, null);
-        this.displayEntityHandle = createDragonDisplay(this);
+        this.displayEntityHandle = createCamDisplay(this, DisplayType.HEAD);
+
+        Bukkit.getOnlinePlayers().forEach(p -> {
+            if (p.getGameMode() == GameMode.SPECTATOR) {
+                hideViewForPlayer(p, ParacamsAPI.getInstance().getPlugin());
+            }
+        });
     }
 
     public boolean isCustomNamed() {
@@ -181,11 +188,22 @@ public class Paracam implements Camera {
     @Override
     public void attachPlayer(Player player) {
         player.setGameMode(GameMode.SPECTATOR);
+
+        // This is necessary to keep the view entity hidden from the player
         player.showEntity(ParacamsAPI.getInstance().getPlugin(), viewEntityHandle);
         player.setSpectatorTarget(viewEntityHandle);
         player.hideEntity(ParacamsAPI.getInstance().getPlugin(), viewEntityHandle);
+
+        //TODO correct setup for hiding and showing display needed
+        player.hideEntity(ParacamsAPI.getInstance().getPlugin(), displayEntityHandle);
         attachedPlayers.add(player);
+
         //TODO extra handling
+    }
+
+    @Override
+    public void hideViewForPlayer(Player p, Plugin pl) {
+        p.hideEntity(pl, this.viewEntityHandle);
     }
 
     @Override

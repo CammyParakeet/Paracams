@@ -5,6 +5,7 @@ import com.parakeetstudios.paracams.api.registers.CameraRegistry;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 
 import java.util.List;
 import java.util.UUID;
@@ -32,6 +33,8 @@ public interface Camera {
     void showDisplay();
     void hideDisplay();
     boolean isDisplayVisible();
+
+    void hideViewForPlayer(Player p, Plugin pl);
 
     void setColor(Color color);
     Color getColor();

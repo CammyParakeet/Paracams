@@ -3,6 +3,8 @@ package com.parakeetstudios.paracams.hook;
 import com.parakeetstudios.paracams.api.ParacamsAPI;
 import com.parakeetstudios.paracams.core.registers.ParacamRegistry;
 import com.parakeetstudios.paracams.core.utils.Paralog;
+import com.parakeetstudios.paracams.hook.listeners.PlayerSpectatorListeners;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class ParacamPlugin extends JavaPlugin {
@@ -13,6 +15,8 @@ public class ParacamPlugin extends JavaPlugin {
         Paralog.info(this.getName() + " is starting...");
 
         ParacamsAPI.getInstance().onEnable(new ParacamRegistry(), this);
+
+        Bukkit.getPluginManager().registerEvents(new PlayerSpectatorListeners(), this);
 
         Paralog.info(this.getName() + " has been initialized");
     }
