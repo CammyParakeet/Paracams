@@ -15,6 +15,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
@@ -89,12 +90,9 @@ public class ParacamRegistry implements CameraRegistry {
 
     @Override
     public Camera getNearestCamera(Location location) {
-        //TODO location comparison logic
-        this.cameras.values().forEach(c -> {
-
-        });
-
-        return null;
+        return cameras.values().stream()
+                .min(Comparator.comparingDouble(cam -> cam.getPosition().distanceSquared(location)))
+                .orElse(null);
     }
 
     @Override
