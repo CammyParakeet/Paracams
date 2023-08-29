@@ -10,6 +10,7 @@ import org.bukkit.plugin.Plugin;
 import java.util.List;
 import java.util.UUID;
 
+//TODO CAMERA SELECTION - GLOW
 public interface Camera {
 
     int getCameraID();
