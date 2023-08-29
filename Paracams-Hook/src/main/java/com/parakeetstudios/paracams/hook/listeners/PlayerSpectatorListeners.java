@@ -9,6 +9,7 @@ import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 
 import static com.parakeetstudios.paracams.core.handlers.PlayerHandlers.HideViewsFromSpectatorHandler;
+import static com.parakeetstudios.paracams.core.handlers.PlayerHandlers.ShowDisplaysToPlayer;
 
 public class PlayerSpectatorListeners implements Listener {
 
@@ -26,7 +27,7 @@ public class PlayerSpectatorListeners implements Listener {
         }
     }
 
-
+    //TODO leaves spectator simple handler - no permissions
     @EventHandler
     public void PlayerStopsSpectatingListener(PlayerStopSpectatingEntityEvent e) {
         if (e.getSpectatorTarget().getScoreboardTags().contains("ParacamView")) {
@@ -35,9 +36,8 @@ public class PlayerSpectatorListeners implements Listener {
                 e.setCancelled(true);
             }
 
-            //ShowDisplaysToPlayer(e.getPlayer());
+            ShowDisplaysToPlayer(e.getPlayer());
         }
     }
-    //TODO leaves spectator simple handler - no permissions
 
 }
