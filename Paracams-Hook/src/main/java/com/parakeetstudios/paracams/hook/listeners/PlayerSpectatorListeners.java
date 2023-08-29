@@ -1,5 +1,6 @@
 package com.parakeetstudios.paracams.hook.listeners;
 
+import com.destroystokyo.paper.event.player.PlayerStopSpectatingEntityEvent;
 import com.parakeetstudios.paracams.core.utils.Paralog;
 import org.bukkit.GameMode;
 import org.bukkit.event.EventHandler;
@@ -25,6 +26,18 @@ public class PlayerSpectatorListeners implements Listener {
         }
     }
 
+
+    @EventHandler
+    public void PlayerStopsSpectatingListener(PlayerStopSpectatingEntityEvent e) {
+        if (e.getSpectatorTarget().getScoreboardTags().contains("ParacamView")) {
+            //TODO proper setup for this permission?
+            if (!e.getPlayer().hasPermission("allowedToLeave?")) {
+                e.setCancelled(true);
+            }
+
+            //ShowDisplaysToPlayer(e.getPlayer());
+        }
+    }
     //TODO leaves spectator simple handler - no permissions
 
 }

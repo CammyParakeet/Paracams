@@ -67,7 +67,7 @@ public class DefaultEntities {
         batHandle.setGlowing(false);
 
         batHandle.addScoreboardTag("Paracam");
-        batHandle.addScoreboardTag("ParacamBat");
+        batHandle.addScoreboardTag("ParacamView");
         return batHandle;
     }
 

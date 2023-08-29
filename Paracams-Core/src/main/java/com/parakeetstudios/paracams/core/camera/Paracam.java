@@ -71,7 +71,7 @@ public class Paracam implements Camera {
 
         Bukkit.getOnlinePlayers().forEach(p -> {
             if (p.getGameMode() == GameMode.SPECTATOR) {
-                hideViewForPlayer(p, ParacamsAPI.getInstance().getPlugin());
+                hideViewForPlayer(p);
             }
         });
     }
@@ -166,6 +166,16 @@ public class Paracam implements Camera {
     }
 
     @Override
+    public void showDisplayToPlayer(Player p) {
+        p.showEntity(ParacamsAPI.getInstance().getPlugin(), displayEntityHandle);
+    }
+
+    @Override
+    public void hideDisplayFromPlayer(Player p) {
+        p.hideEntity(ParacamsAPI.getInstance().getPlugin(), displayEntityHandle);
+    }
+
+    @Override
     public void setColor(Color color) {
         this.color = color;
     }
@@ -194,16 +204,16 @@ public class Paracam implements Camera {
         player.setSpectatorTarget(viewEntityHandle);
         player.hideEntity(ParacamsAPI.getInstance().getPlugin(), viewEntityHandle);
 
-        //TODO correct setup for hiding and showing display needed
-        player.hideEntity(ParacamsAPI.getInstance().getPlugin(), displayEntityHandle);
+        // Hide display from viewers
+        hideDisplayFromPlayer(player);
         attachedPlayers.add(player);
 
         //TODO extra handling
     }
 
     @Override
-    public void hideViewForPlayer(Player p, Plugin pl) {
-        p.hideEntity(pl, this.viewEntityHandle);
+    public void hideViewForPlayer(Player p) {
+        p.hideEntity(ParacamsAPI.getInstance().getPlugin(), this.viewEntityHandle);
     }
 
     @Override

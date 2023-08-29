@@ -34,7 +34,9 @@ public interface Camera {
     void hideDisplay();
     boolean isDisplayVisible();
 
-    void hideViewForPlayer(Player p, Plugin pl);
+    void showDisplayToPlayer(Player p);
+    void hideDisplayFromPlayer(Player p);
+    void hideViewForPlayer(Player p);
 
     void setColor(Color color);
     Color getColor();

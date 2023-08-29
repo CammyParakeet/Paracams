@@ -33,7 +33,9 @@ public interface CameraRegistry {
     void hideCamera(int camID);
     void showAllCameras();
     void hideAllCameras();
-    void hideAllViewHandlesFromPlayer(Player p, Plugin pl);
+    void showAllCamerasToPlayer(Player p);
+    void hideAllCamerasFromPlayer(Player p);
+    void hideAllViewHandlesFromPlayer(Player p);
 
     void activateCamera(int camID);
     void pauseCamera(int camID);

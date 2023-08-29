@@ -7,7 +7,11 @@ import org.bukkit.plugin.Plugin;
 public class PlayerHandlers {
 
     public static void HideViewsFromSpectatorHandler(Player player) {
-        ParacamsAPI.getInstance().getCameraRegistry().hideAllViewHandlesFromPlayer(player, ParacamsAPI.getInstance().getPlugin());
+        ParacamsAPI.getInstance().getCameraRegistry().hideAllViewHandlesFromPlayer(player);
+    }
+
+    public static void ShowDisplaysToPlayer(Player player) {
+        ParacamsAPI.getInstance().getCameraRegistry().showAllCamerasToPlayer(player);
     }
 
 }

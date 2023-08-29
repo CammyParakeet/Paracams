@@ -129,9 +129,15 @@ public class ParacamRegistry implements CameraRegistry {
     }
 
     @Override
-    public void hideAllViewHandlesFromPlayer(Player p, Plugin pl) {
-        getAllCameras().forEach(cam -> cam.hideViewForPlayer(p, pl));
+    public void showAllCamerasToPlayer(Player p) { getAllCameras().forEach(cam -> cam.showDisplayToPlayer(p)); }
+
+    @Override
+    public void hideAllCamerasFromPlayer(Player p) {
+
     }
+
+    @Override
+    public void hideAllViewHandlesFromPlayer(Player p) { getAllCameras().forEach(cam -> cam.hideViewForPlayer(p)); }
 
     @Override
     public void activateCamera(int camID) {
