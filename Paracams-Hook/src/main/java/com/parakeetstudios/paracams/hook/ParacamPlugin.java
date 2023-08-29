@@ -12,7 +12,7 @@ public class ParacamPlugin extends JavaPlugin {
         Paralog.init(getLogger());
         Paralog.info(this.getName() + " is starting...");
 
-        ParacamsAPI.getInstance().onEnable(new ParacamRegistry());
+        ParacamsAPI.getInstance().onEnable(new ParacamRegistry(), this);
 
         Paralog.info(this.getName() + " has been initialized");
     }

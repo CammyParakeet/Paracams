@@ -1,11 +1,13 @@
 package com.parakeetstudios.paracams.api;
 
 import com.parakeetstudios.paracams.api.registers.CameraRegistry;
+import org.bukkit.plugin.Plugin;
 
 public final class ParacamsAPI {
 
     private CameraRegistry cameraRegistry;
     private final Object lock = new Object();
+    private Plugin plugin;
 
     private ParacamsAPI(){};
 
@@ -17,12 +19,15 @@ public final class ParacamsAPI {
         return InstanceHolder.instance;
     }
 
+    public Plugin getPlugin() { return this.plugin; }
+
     public CameraRegistry getCameraRegistry() { return this.cameraRegistry; }
 
-    public void onEnable(CameraRegistry registry) {
+    public void onEnable(CameraRegistry registry, Plugin plugin) {
         synchronized (lock) {
             if (this.cameraRegistry == null) {
                 this.cameraRegistry = registry;
+                this.plugin = plugin;
             } else {
                 throw new IllegalStateException("ParacamsAPI has already been enabled");
             }

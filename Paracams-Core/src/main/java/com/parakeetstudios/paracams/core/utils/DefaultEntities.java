@@ -1,15 +1,18 @@
 package com.parakeetstudios.paracams.core.utils;
 
+import com.parakeetstudios.paracams.api.ParacamsAPI;
 import net.kyori.adventure.text.Component;
-import org.bukkit.Color;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.util.Transformation;
+import org.bukkit.util.Vector;
+import org.joml.AxisAngle4f;
+import org.joml.Vector3f;
 
 public class DefaultEntities {
 
@@ -31,27 +34,42 @@ public class DefaultEntities {
         batHandle.setPersistent(false);
 
         // invisible by default
+        // TODO - on a player without certain permission has updategamemode to spectate event, hide the entity from that player
+        // TODO - since the ghost will still show
         batHandle.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, -1, 1, true, false, false));
+
         // glowing for dev
-        batHandle.setGlowing(true);
+        batHandle.setGlowing(false);
 
         batHandle.addScoreboardTag("Paracam");
+        batHandle.addScoreboardTag("ParacamBat");
         return batHandle;
     }
+
 
     public static Entity createSimpleDisplay(Location location, String displaySettings) {
         return null;
     }
 
+
     public static Entity createDragonDisplay(Location location, String displaySettings) {
+        Matrix M = new Matrix();
+
         //TODO settings setup
         ItemDisplay displayHandle = (ItemDisplay) location.getWorld().spawnEntity(location, EntityType.ITEM_DISPLAY);
+        // type maybe eventually from config?
         displayHandle.setItemStack(new ItemStack(Material.DRAGON_HEAD));
 
-        displayHandle.setDisplayHeight(0.3f);
-        displayHandle.setDisplayWidth(0.3f);
+        // scale the camera - eventually from config
+        M.setTranslation(0, .05f, -.15f);
+        M.setScale(.25f, .25f, .2f);
+        displayHandle.setTransformation(M.toTransformation());
 
-        //displayHandle.setTransformation();
+        // display to FIXED ensures the display faces the correct direction of the entity
+        displayHandle.setItemDisplayTransform(ItemDisplay.ItemDisplayTransform.FIXED);
+
+        // teleport is needed as far as I know to update the direction vector
+        displayHandle.teleport(location);
 
         // glowing by default
         displayHandle.setGlowing(true);
@@ -64,10 +82,12 @@ public class DefaultEntities {
         displayHandle.setInvulnerable(true);
 
         // simple camera icon name by default
+        // eventually will show name/num from config or param
         displayHandle.customName(Component.text("\uD83D\uDCF7"));
         // name visible by default
         displayHandle.setCustomNameVisible(true);
 
+        displayHandle.addScoreboardTag("Paracam");
         displayHandle.addScoreboardTag("ParacamDisplay");
         return displayHandle;
     }

@@ -1,10 +1,11 @@
 package com.parakeetstudios.paracams.core.camera;
 
+import com.parakeetstudios.paracams.api.ParacamsAPI;
 import com.parakeetstudios.paracams.api.camera.Camera;
 import com.parakeetstudios.paracams.api.camera.CameraSettings;
 import com.parakeetstudios.paracams.api.cinematics.AnimationController;
 import com.parakeetstudios.paracams.api.registers.CameraRegistry;
-import com.parakeetstudios.paracams.core.utils.DefaultEntities;
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
@@ -15,24 +16,24 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static com.parakeetstudios.paracams.core.utils.DefaultEntities.createBat;
-import static com.parakeetstudios.paracams.core.utils.DefaultEntities.createSimpleDisplay;
+import static com.parakeetstudios.paracams.core.utils.DefaultEntities.*;
 import static com.parakeetstudios.paracams.core.utils.MathUtils.clamp;
 
+@SuppressWarnings("UnstableApiUsage")
 public class Paracam implements Camera {
 
     private final int cameraID;
-    private int cameraNumber;
+    private int cameraNumber;   // TODO how will we handle this
     private String name;
     private Location position;
     private Location origin;
     private CameraSettings cameraSettings;
-    private List<Player> attachedPlayers;
-    private CameraRegistry owningRegistry;
-    private List<AnimationController> animationControllers;
+    private final List<Player> attachedPlayers;
+    private final CameraRegistry owningRegistry;
+    private List<AnimationController> animationControllers; //TODO setup how we do this
 
     private boolean displayVisible;
-    private boolean showName;
+    private boolean nameVisible;
     private boolean isMoving;
 
     private Entity viewEntityHandle;
@@ -58,7 +59,8 @@ public class Paracam implements Camera {
 //            this.displayEntityHandle = DefaultEntities.createDisplay(position, null);
 //        }
         this.viewEntityHandle = createBat(position, null);
-        this.displayEntityHandle = createSimpleDisplay(origin, null);
+        // uses view-entity location to get correct direction vector
+        this.displayEntityHandle = createDragonDisplay(viewEntityHandle.getLocation(), null);
     }
 
     @Override
@@ -103,7 +105,8 @@ public class Paracam implements Camera {
 
     @Override
     public void despawn() {
-
+        this.viewEntityHandle.remove();
+        this.displayEntityHandle.remove();
     }
 
     @Override
@@ -124,15 +127,15 @@ public class Paracam implements Camera {
     @Override
     public void showDisplay() {
         this.viewEntityHandle.setCustomNameVisible(true);
-        this.displayEntityHandle.setCustomNameVisible(true);
+        this.displayEntityHandle.setVisibleByDefault(true);
         this.displayVisible = true;
-        //TODO proper display mechanics
+        //TODO test if this works well
     }
 
     @Override
     public void hideDisplay() {
         this.viewEntityHandle.setCustomNameVisible(false);
-        this.displayEntityHandle.setCustomNameVisible(false);
+        this.displayEntityHandle.setVisibleByDefault(false);
         this.displayVisible = false;
     }
 
@@ -154,7 +157,9 @@ public class Paracam implements Camera {
     @Override
     public void attachPlayer(Player player) {
         player.setGameMode(GameMode.SPECTATOR);
+        player.showEntity(ParacamsAPI.getInstance().getPlugin(), viewEntityHandle);
         player.setSpectatorTarget(viewEntityHandle);
+        player.hideEntity(ParacamsAPI.getInstance().getPlugin(), viewEntityHandle);
         attachedPlayers.add(player);
         //TODO extra handling
     }
@@ -162,7 +167,7 @@ public class Paracam implements Camera {
     @Override
     public void detachPlayer(Player player) {
         attachedPlayers.remove(player);
-        //player.setGameMode(GameMode.ADVENTURE);
+        //player.setGameMode(GameMode.ADVENTURE);   //TODO needs to get their beforehand game mode somehow
         //TODO proper handling of detaching
         // this will require some setting management/event handling
     }
@@ -213,6 +218,7 @@ public class Paracam implements Camera {
         return false;
     }
 
+
     @Override
     public String simpleString() {
         return "Paracam{" +
@@ -227,7 +233,7 @@ public class Paracam implements Camera {
 
     @Override
     public String toString() {
-        return simpleString();
+        return getName();
     }
 
 }
