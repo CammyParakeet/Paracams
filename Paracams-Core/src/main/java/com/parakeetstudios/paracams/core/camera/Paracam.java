@@ -6,6 +6,7 @@ import com.parakeetstudios.paracams.api.camera.CameraSettings;
 import com.parakeetstudios.paracams.api.cinematics.AnimationController;
 import com.parakeetstudios.paracams.api.registers.CameraRegistry;
 import org.bukkit.Bukkit;
+import org.bukkit.Color;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
@@ -14,6 +15,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static com.parakeetstudios.paracams.core.utils.DefaultEntities.*;
@@ -31,7 +33,9 @@ public class Paracam implements Camera {
     private final List<Player> attachedPlayers;
     private final CameraRegistry owningRegistry;
     private List<AnimationController> animationControllers; //TODO setup how we do this
+    private Color color;
 
+    private boolean isCustomNamed;
     private boolean displayVisible;
     private boolean nameVisible;
     private boolean isMoving;
@@ -39,18 +43,21 @@ public class Paracam implements Camera {
     private Entity viewEntityHandle;
     private Entity displayEntityHandle;
 
-    public Paracam(int cameraID, String name, @NotNull Location position, CameraRegistry registry) {
+    public Paracam(int cameraID, String name, @NotNull Location position, CameraRegistry registry, Color color) {
         this.cameraID = cameraID;
-        this.name = name;
         this.position = position;
         this.origin = position.clone();
         this.attachedPlayers = new ArrayList<>();
         this.animationControllers = new ArrayList<>();
         this.owningRegistry = registry;
+        this.cameraNumber = this.getOwningRegistry().count()+1;
+        this.color = (color != null) ? color : Color.WHITE;
+        this.isCustomNamed = (name != null);
+        this.name = this.isCustomNamed ? name : "cam" + cameraNumber;
     }
 
-    public Paracam(int cameraID, @NotNull Location position, CameraRegistry registry) {
-        this(cameraID, "", position, registry);
+    public Paracam(int cameraID, @NotNull Location position, CameraRegistry registry, Color color) {
+        this(cameraID, "", position, registry, color);
     }
 
     private void initializeCamera() {
@@ -59,8 +66,15 @@ public class Paracam implements Camera {
 //            this.displayEntityHandle = DefaultEntities.createDisplay(position, null);
 //        }
         this.viewEntityHandle = createBat(position, null);
-        // uses view-entity location to get correct direction vector
-        this.displayEntityHandle = createDragonDisplay(viewEntityHandle.getLocation(), null);
+        this.displayEntityHandle = createDragonDisplay(this);
+    }
+
+    public boolean isCustomNamed() {
+        return this.isCustomNamed;
+    }
+
+    public int getCameraNumber() {
+        return this.cameraNumber;
     }
 
     @Override
@@ -142,6 +156,16 @@ public class Paracam implements Camera {
     @Override
     public boolean isDisplayVisible() {
         return this.displayVisible;
+    }
+
+    @Override
+    public void setColor(Color color) {
+        this.color = color;
+    }
+
+    @Override
+    public Color getColor() {
+        return this.color;
     }
 
     @Override
@@ -231,6 +255,7 @@ public class Paracam implements Camera {
                 '}';
     }
 
+    //TODO chat hover to get more info, and click event to tp to camera
     @Override
     public String toString() {
         return getName();

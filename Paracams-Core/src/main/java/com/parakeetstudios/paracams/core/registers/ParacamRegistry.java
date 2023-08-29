@@ -6,13 +6,14 @@ import com.parakeetstudios.paracams.api.registers.CameraRegistry;
 import com.parakeetstudios.paracams.api.registers.SceneRegistry;
 import com.parakeetstudios.paracams.core.camera.Paracam;
 import com.parakeetstudios.paracams.core.utils.MathUtils;
-import com.parakeetstudios.paracams.core.utils.Paralog;
+import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -26,29 +27,32 @@ public class ParacamRegistry implements CameraRegistry {
 
     private final ConcurrentHashMap<Integer, Camera> cameras = new ConcurrentHashMap<>();
 
-    private Paracam createParacam(int id, String name, @NotNull Location position) {
-        return new Paracam(id, name, position, this);
+    private Paracam createParacam(int id, String name, @NotNull Location position, Color color) {
+        return new Paracam(id, name, position, this, color);
     }
 
     @Override
     public Camera createCamera(Location position) {
-        return createCamera(null, position);
+        return createCamera(null, position, null);
     }
 
     @Override
-    public Camera createCamera(String name, Location position) {
+    public Camera createCamera(String name, Location position) { return createCamera(name, position, null); }
+
+    @Override
+    public Camera createCamera(Location position, Color color) { return createCamera(null, position, color); }
+
+    @Override
+    public Camera createCamera(String name, Location position, Color color) {
         Objects.requireNonNull(position, "Position cannot be null");
-
-        Paracam cam = createParacam(MathUtils.genRandInt(), name, position);
-        registerCamera(cam);
-
+        // id limit in config?
+        Paracam cam = createParacam(MathUtils.genRandInt(1000), name, position, color);
+        registerCamera(cam);    // register instantly by default
         return cam;
     }
 
     @Override
-    public void registerCamera(Camera cam) {
-        this.cameras.put(cam.getCameraID(), cam);
-    }
+    public void registerCamera(Camera cam) { this.cameras.put(cam.getCameraID(), cam); }
 
     @Override
     public void remove(int camID) {

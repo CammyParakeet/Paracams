@@ -1,7 +1,9 @@
 package com.parakeetstudios.paracams.core.utils;
 
 import com.parakeetstudios.paracams.api.ParacamsAPI;
+import com.parakeetstudios.paracams.core.camera.Paracam;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.*;
@@ -52,8 +54,10 @@ public class DefaultEntities {
     }
 
 
-    public static Entity createDragonDisplay(Location location, String displaySettings) {
+    public static Entity createDragonDisplay(Paracam cam) {
         Matrix M = new Matrix();
+
+        Location location = cam.getPosition();
 
         //TODO settings setup
         ItemDisplay displayHandle = (ItemDisplay) location.getWorld().spawnEntity(location, EntityType.ITEM_DISPLAY);
@@ -61,7 +65,7 @@ public class DefaultEntities {
         displayHandle.setItemStack(new ItemStack(Material.DRAGON_HEAD));
 
         // scale the camera - eventually from config
-        M.setTranslation(0, .05f, -.15f);
+        M.setTranslation(0, 0, -.15f);
         M.setScale(.25f, .25f, .2f);
         displayHandle.setTransformation(M.toTransformation());
 
@@ -74,16 +78,18 @@ public class DefaultEntities {
         // glowing by default
         displayHandle.setGlowing(true);
         // gray glow color by default
-        displayHandle.setGlowColorOverride(Color.GRAY);
+        displayHandle.setGlowColorOverride(cam.getColor());
 
         // not persistent by default
         displayHandle.setPersistent(false);
 
         displayHandle.setInvulnerable(true);
 
-        // simple camera icon name by default
-        // eventually will show name/num from config or param
-        displayHandle.customName(Component.text("\uD83D\uDCF7"));
+        // simple camera icon name by default - color only applies to icon by default
+        displayHandle.customName(Component.text("\uD83D\uDCF7")
+                .color(TextColor.color(cam.getColor().asRGB()))
+                .append(Component.text(" " + ((cam.isCustomNamed()) ? cam.getName() : cam.getCameraNumber()))
+                        .color(TextColor.color(0xFFFFFF))));
         // name visible by default
         displayHandle.setCustomNameVisible(true);
 

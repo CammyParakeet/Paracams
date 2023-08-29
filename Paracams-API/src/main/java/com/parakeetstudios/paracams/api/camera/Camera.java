@@ -2,6 +2,7 @@ package com.parakeetstudios.paracams.api.camera;
 
 import com.parakeetstudios.paracams.api.cinematics.AnimationController;
 import com.parakeetstudios.paracams.api.registers.CameraRegistry;
+import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -31,6 +32,9 @@ public interface Camera {
     void showDisplay();
     void hideDisplay();
     boolean isDisplayVisible();
+
+    void setColor(Color color);
+    Color getColor();
 
     //TODO do we need these getters or only use field?
     void setCameraSettings(CameraSettings settings);
