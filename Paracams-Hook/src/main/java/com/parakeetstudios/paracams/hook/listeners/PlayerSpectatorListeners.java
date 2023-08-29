@@ -33,9 +33,13 @@ public class PlayerSpectatorListeners implements Listener {
         if (e.getSpectatorTarget().getScoreboardTags().contains("ParacamView")) {
             //TODO proper setup for this permission?
             if (!e.getPlayer().hasPermission("allowedToLeave?")) {
+                // cancel the player leaving
                 e.setCancelled(true);
+                // reset the spectator target to stop glitching
+                e.getPlayer().setSpectatorTarget(e.getSpectatorTarget());
+                return; // return to stop the display showing
             }
-
+            //TODO only show if they have a permission? Or a setting
             ShowDisplaysToPlayer(e.getPlayer());
         }
     }
