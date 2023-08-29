@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -23,9 +24,9 @@ public interface CameraRegistry {
     void remove(int camID);
     void remove(Camera cam);
 
-    Camera getCamera(int camID);
-    Camera getCameraOnPlayer(Player player);
-    Camera getNearestCamera(Location location);
+    Optional<Camera> getCamera(int camID);
+    Optional<Camera> getCameraOnPlayer(Player player);
+    Optional<Camera> getNearestCamera(Location location);
     List<Camera> getAllCameras();
     List<Camera> searchCameras(Predicate<Camera> predicate);
 

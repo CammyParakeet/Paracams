@@ -12,6 +12,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -33,6 +34,7 @@ public class Paracam implements Camera {
     private CameraSettings cameraSettings;
     private final List<Player> attachedPlayers;
     private final CameraRegistry owningRegistry;
+    private final Plugin owningPlugin;
     private List<AnimationController> animationControllers; //TODO setup how we do this
     private Color color;
 
@@ -55,6 +57,7 @@ public class Paracam implements Camera {
         this.color = (color != null) ? color : Color.WHITE;
         this.isCustomNamed = (name != null);
         this.name = this.isCustomNamed ? name : "cam" + cameraNumber;
+        this.owningPlugin = ParacamsAPI.getInstance().getPlugin();
     }
 
     public Paracam(int cameraID, @NotNull Location position, CameraRegistry registry, Color color) {
@@ -130,9 +133,39 @@ public class Paracam implements Camera {
         this.displayEntityHandle.remove();
     }
 
+
+    //TODO CURRENT PAN NOT QUITE WHAT WE WANT - also think about what names -> movements we actually want
     @Override
-    public void pan() {
+    public void pan(float targetDegrees, long duration) {
         //TODO pan mechanics
+        float currentYaw = viewEntityHandle.getLocation().getYaw();
+        float yawDiff = targetDegrees - currentYaw;
+
+        // Smoothness steps
+        int steps = 20;
+        float yawPerStep = yawDiff / steps;
+
+        // Convert duration to ticks
+        long tickTotal = duration / 50;
+        long ticksPerStep = tickTotal / steps;
+
+        new BukkitRunnable() {
+            private int currentStep = 0;
+
+            @Override
+            public void run() {
+                if (currentStep >= steps) {
+                    this.cancel();
+                    return;
+                }
+
+                Location currentLoc = viewEntityHandle.getLocation();
+                currentLoc.setYaw(currentLoc.getYaw() + yawPerStep);
+                viewEntityHandle.teleport(currentLoc);
+
+                currentStep++;
+            }
+        }.runTaskTimer(owningPlugin, 0L, ticksPerStep);
     }
 
     @Override

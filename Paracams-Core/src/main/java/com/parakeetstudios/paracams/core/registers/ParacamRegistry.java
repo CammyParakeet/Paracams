@@ -18,6 +18,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -76,23 +77,21 @@ public class ParacamRegistry implements CameraRegistry {
     }
 
     @Override
-    public Camera getCamera(int camID) {
-        return this.cameras.get(camID);
+    public Optional<Camera> getCamera(int camID) {
+        return Optional.ofNullable(this.cameras.get(camID));
     }
 
     @Override
-    public Camera getCameraOnPlayer(Player player) {
-        //TODO think about how to handle this logic
-        // do we try assign a camera to the player object somehow?
-        // or search cameras for their assigned players?
-        return null;
-    }
-
-    @Override
-    public Camera getNearestCamera(Location location) {
+    public Optional<Camera> getCameraOnPlayer(Player player) {
         return cameras.values().stream()
-                .min(Comparator.comparingDouble(cam -> cam.getPosition().distanceSquared(location)))
-                .orElse(null);
+                .filter(cam -> cam.isPlayerAttached(player))
+                .findFirst();
+    }
+
+    @Override
+    public Optional<Camera> getNearestCamera(Location location) {
+        return cameras.values().stream()
+                .min(Comparator.comparingDouble(cam -> cam.getPosition().distanceSquared(location)));
     }
 
     @Override

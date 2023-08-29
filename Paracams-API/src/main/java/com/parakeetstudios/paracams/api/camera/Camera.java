@@ -27,7 +27,7 @@ public interface Camera {
     void spawn();
     void despawn();
 
-    void pan();
+    void pan(float deg, long duration);
     void tilt();
     void rotate();
 
