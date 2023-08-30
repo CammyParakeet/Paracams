@@ -1,0 +1,14 @@
+{
+  "parent": "entity/bat",
+  "textures": {
+    "bat": "entity/bat/bat"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "custom_model_data": "CAMERA-VIEW"
+      },
+      "model": "entity/camera_view"
+    }
+  ]
+}

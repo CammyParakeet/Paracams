@@ -1,17 +1,18 @@
 package com.parakeetstudios.paracams.core.camera;
 
-import com.google.common.collect.Multimap;
 import com.parakeetstudios.paracams.api.ParacamsAPI;
 import com.parakeetstudios.paracams.api.camera.Camera;
 import com.parakeetstudios.paracams.api.camera.CameraSettings;
 import com.parakeetstudios.paracams.api.cinematics.AnimationController;
 import com.parakeetstudios.paracams.api.registers.CameraRegistry;
 import com.parakeetstudios.paracams.api.utils.ViewAxis;
+
+import com.parakeetstudios.paracams.core.nms.EntityPacketWrapper;
+import com.parakeetstudios.paracams.core.utils.Paralog;
 import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -64,13 +65,8 @@ public class Paracam implements Camera {
 //            this.displayEntityHandle = DefaultEntities.createDisplay(position, null);
 //        }
         this.viewEntityHandle = createBat(position, null);
+        Paralog.info(viewEntityHandle.getUniqueId().toString());
         this.displayEntityHandle = createCamDisplay(this, DisplayType.HEAD);
-
-        Bukkit.getOnlinePlayers().forEach(p -> {
-            if (p.getGameMode() == GameMode.SPECTATOR) {
-                hideViewForPlayer(p);
-            }
-        });
     }
 
     public boolean isCustomNamed() {
@@ -88,6 +84,7 @@ public class Paracam implements Camera {
 
     @Override
     public void setName(String name) {
+        this.isCustomNamed = true;
         this.name = name;
     }
 
@@ -98,6 +95,8 @@ public class Paracam implements Camera {
 
     @Override
     public void setPosition(Location location) {
+        viewEntityHandle.teleport(location);
+        displayEntityHandle.teleport(location);
         this.position = location;
     }
 
@@ -130,22 +129,26 @@ public class Paracam implements Camera {
 
     @Override
     public void pan(float deg, long duration) {
-        rotate(deg, duration, ViewAxis.X);
+        rotate(deg, 0, 0, duration, ViewAxis.Y);
     }
 
     @Override
     public void tilt(float deg, long duration) {
-
+        rotate(0, deg, 0, duration, ViewAxis.X);
     }
 
     @Override
     public void roll(float deg, long duration) {
-
+        rotate(0, 0, deg, duration, ViewAxis.Z);
     }
 
     @Override
-    public void rotate(float deg, long duration, ViewAxis axis) {
+    public void rotate(float yaw, float pitch, float deg, long duration, ViewAxis axis) {
+        Location newPos = position;
+        newPos.setYaw(yaw);
+        newPos.setPitch(pitch);
 
+        setPosition(newPos);
     }
 
 
@@ -203,11 +206,7 @@ public class Paracam implements Camera {
     public void attachPlayer(Player player) {
         attachedPlayers.put(player, player.getGameMode());
         player.setGameMode(GameMode.SPECTATOR);
-
-        // This is necessary to keep the view entity hidden from the player
-        player.showEntity(owningPlugin, viewEntityHandle);
         player.setSpectatorTarget(viewEntityHandle);
-        player.hideEntity(owningPlugin, viewEntityHandle);
 
         // Hide display from viewers
         hideDisplayFromPlayer(player);
@@ -216,8 +215,9 @@ public class Paracam implements Camera {
 
     @Override
     public void hideViewForPlayer(Player p) {
-        p.hideEntity(owningPlugin, this.viewEntityHandle);
+        //p.hideEntity(owningPlugin, this.viewEntityHandle);
     }
+
 
     @Override
     public void detachPlayer(Player player) {
@@ -234,6 +234,14 @@ public class Paracam implements Camera {
     @Override
     public boolean isPlayerAttached(Player player) {
         return (attachedPlayers.containsKey(player));
+    }
+
+    @Override
+    public void updatePlayerCameras() {
+        attachedPlayers.keySet().forEach(player -> {
+            player.sendMessage("Are you spectating?");
+            EntityPacketWrapper.rotateEntity(player, player.getLocation().getYaw(), player.getLocation().getPitch());
+        });
     }
 
     @Override

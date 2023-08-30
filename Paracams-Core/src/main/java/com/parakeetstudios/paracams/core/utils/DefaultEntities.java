@@ -63,7 +63,9 @@ public class DefaultEntities {
         // TODO - since the ghost will still show
         batHandle.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, -1, 1, true, false, false));
 
-        // glowing for dev
+
+
+        // glowing for dev?
         batHandle.setGlowing(false);
 
         batHandle.addScoreboardTag("Paracam");
@@ -79,7 +81,7 @@ public class DefaultEntities {
         //TODO better logic for this later on
         if (type.getType() == Material.PLAYER_HEAD) {
             displayItem = NBTUtils.SkullOwnerNBT(displayItem, camera1SD);
-            M.setScale(0.5f, 0.5f, 0.65f);
+            M.setScale(0.45f, 0.45f, 0.65f);
         } else {
             // scale the camera - eventually from config
             M.setScale(.25f, .25f, .2f);

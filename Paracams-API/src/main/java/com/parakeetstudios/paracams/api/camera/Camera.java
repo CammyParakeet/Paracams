@@ -34,7 +34,7 @@ public interface Camera {
     void pan(float deg, long duration);
     void tilt(float deg, long duration);
     void roll(float deg, long duration);
-    void rotate(float deg, long duration, ViewAxis axis);
+    void rotate(float yaw, float pitch, float deg, long duration, ViewAxis axis);
 
     void showDisplay();
     void hideDisplay();
@@ -55,6 +55,8 @@ public interface Camera {
     void detachPlayer(Player player);
     void detachPlayer(Player player, GameMode newGamemode);
     boolean isPlayerAttached(Player player);
+
+    void updatePlayerCameras();
 
     Map<Player, GameMode> getAttachedPlayers();
     Player getAttachedPlayerByID(UUID id);

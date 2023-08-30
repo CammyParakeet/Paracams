@@ -1,0 +1,6 @@
+{
+  "parent": "entity/bat",
+  "textures": {
+    "bat": "entity/camera_view"
+  }
+}
