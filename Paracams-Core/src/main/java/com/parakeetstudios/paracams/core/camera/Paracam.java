@@ -1,24 +1,20 @@
 package com.parakeetstudios.paracams.core.camera;
 
+import com.google.common.collect.Multimap;
 import com.parakeetstudios.paracams.api.ParacamsAPI;
 import com.parakeetstudios.paracams.api.camera.Camera;
 import com.parakeetstudios.paracams.api.camera.CameraSettings;
 import com.parakeetstudios.paracams.api.cinematics.AnimationController;
 import com.parakeetstudios.paracams.api.registers.CameraRegistry;
-import org.bukkit.Bukkit;
-import org.bukkit.Color;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
+import com.parakeetstudios.paracams.api.utils.ViewAxis;
+import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static com.parakeetstudios.paracams.core.utils.DefaultEntities.*;
 import static com.parakeetstudios.paracams.core.utils.MathUtils.clamp;
@@ -27,15 +23,15 @@ import static com.parakeetstudios.paracams.core.utils.MathUtils.clamp;
 public class Paracam implements Camera {
 
     private final int cameraID;
-    private int cameraNumber;   // TODO how will we handle this
+    private final int cameraNumber;   // TODO how will we handle this
     private String name;
     private Location position;
     private Location origin;
     private CameraSettings cameraSettings;
-    private final List<Player> attachedPlayers;
+    private final Map<Player, GameMode> attachedPlayers = new HashMap<>();
     private final CameraRegistry owningRegistry;
     private final Plugin owningPlugin;
-    private List<AnimationController> animationControllers; //TODO setup how we do this
+    private final List<AnimationController> animationControllers = new ArrayList<>();; //TODO setup how we do this
     private Color color;
 
     private boolean isCustomNamed;
@@ -50,8 +46,6 @@ public class Paracam implements Camera {
         this.cameraID = cameraID;
         this.position = position;
         this.origin = position.clone();
-        this.attachedPlayers = new ArrayList<>();
-        this.animationControllers = new ArrayList<>();
         this.owningRegistry = registry;
         this.cameraNumber = this.getOwningRegistry().count()+1;
         this.color = (color != null) ? color : Color.WHITE;
@@ -134,49 +128,26 @@ public class Paracam implements Camera {
     }
 
 
-    //TODO CURRENT PAN NOT QUITE WHAT WE WANT - also think about what names -> movements we actually want
     @Override
-    public void pan(float targetDegrees, long duration) {
-        //TODO pan mechanics
-        float currentYaw = viewEntityHandle.getLocation().getYaw();
-        float yawDiff = targetDegrees - currentYaw;
-
-        // Smoothness steps
-        int steps = 20;
-        float yawPerStep = yawDiff / steps;
-
-        // Convert duration to ticks
-        long tickTotal = duration / 50;
-        long ticksPerStep = tickTotal / steps;
-
-        new BukkitRunnable() {
-            private int currentStep = 0;
-
-            @Override
-            public void run() {
-                if (currentStep >= steps) {
-                    this.cancel();
-                    return;
-                }
-
-                Location currentLoc = viewEntityHandle.getLocation();
-                currentLoc.setYaw(currentLoc.getYaw() + yawPerStep);
-                viewEntityHandle.teleport(currentLoc);
-
-                currentStep++;
-            }
-        }.runTaskTimer(owningPlugin, 0L, ticksPerStep);
+    public void pan(float deg, long duration) {
+        rotate(deg, duration, ViewAxis.X);
     }
 
     @Override
-    public void tilt() {
-        //TODO tilt mechanics;
+    public void tilt(float deg, long duration) {
+
     }
 
     @Override
-    public void rotate() {
-        //TODO rotation mechanics;
+    public void roll(float deg, long duration) {
+
     }
+
+    @Override
+    public void rotate(float deg, long duration, ViewAxis axis) {
+
+    }
+
 
     @Override
     public void showDisplay() {
@@ -200,12 +171,12 @@ public class Paracam implements Camera {
 
     @Override
     public void showDisplayToPlayer(Player p) {
-        p.showEntity(ParacamsAPI.getInstance().getPlugin(), displayEntityHandle);
+        p.showEntity(owningPlugin, displayEntityHandle);
     }
 
     @Override
     public void hideDisplayFromPlayer(Player p) {
-        p.hideEntity(ParacamsAPI.getInstance().getPlugin(), displayEntityHandle);
+        p.hideEntity(owningPlugin, displayEntityHandle);
     }
 
     @Override
@@ -230,46 +201,54 @@ public class Paracam implements Camera {
 
     @Override
     public void attachPlayer(Player player) {
+        attachedPlayers.put(player, player.getGameMode());
         player.setGameMode(GameMode.SPECTATOR);
 
         // This is necessary to keep the view entity hidden from the player
-        player.showEntity(ParacamsAPI.getInstance().getPlugin(), viewEntityHandle);
+        player.showEntity(owningPlugin, viewEntityHandle);
         player.setSpectatorTarget(viewEntityHandle);
-        player.hideEntity(ParacamsAPI.getInstance().getPlugin(), viewEntityHandle);
+        player.hideEntity(owningPlugin, viewEntityHandle);
 
         // Hide display from viewers
         hideDisplayFromPlayer(player);
-        attachedPlayers.add(player);
-
         //TODO extra handling
     }
 
     @Override
     public void hideViewForPlayer(Player p) {
-        p.hideEntity(ParacamsAPI.getInstance().getPlugin(), this.viewEntityHandle);
+        p.hideEntity(owningPlugin, this.viewEntityHandle);
     }
 
     @Override
     public void detachPlayer(Player player) {
+        detachPlayer(player, attachedPlayers.get(player));
+    }
+
+    @Override
+    public void detachPlayer(Player player, GameMode mode) {
         attachedPlayers.remove(player);
-        //player.setGameMode(GameMode.ADVENTURE);   //TODO needs to get their beforehand game mode somehow
-        //TODO proper handling of detaching
-        // this will require some setting management/event handling
+        player.setGameMode(mode);
+        showDisplayToPlayer(player);
     }
 
     @Override
     public boolean isPlayerAttached(Player player) {
-        return (attachedPlayers.contains(player));
+        return (attachedPlayers.containsKey(player));
     }
 
     @Override
-    public List<Player> getAttachedPlayers() {
+    public Map<Player, GameMode> getAttachedPlayers() {
         return this.attachedPlayers;
     }
 
+    //TODO do we actually need these ones
     @Override
     public Player getAttachedPlayerByID(UUID id) {
-        return null;
+        if (attachedPlayers.containsKey(owningPlugin.getServer().getPlayer(id))) {
+            return owningPlugin.getServer().getPlayer(id);
+        } else {
+            return null; // TODO sort this out better
+        }
     }
 
     @Override

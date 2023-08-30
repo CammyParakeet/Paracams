@@ -2,12 +2,16 @@ package com.parakeetstudios.paracams.api.camera;
 
 import com.parakeetstudios.paracams.api.cinematics.AnimationController;
 import com.parakeetstudios.paracams.api.registers.CameraRegistry;
+import com.parakeetstudios.paracams.api.utils.ViewAxis;
+import org.bukkit.Axis;
 import org.bukkit.Color;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 //TODO CAMERA SELECTION - GLOW
@@ -28,8 +32,9 @@ public interface Camera {
     void despawn();
 
     void pan(float deg, long duration);
-    void tilt();
-    void rotate();
+    void tilt(float deg, long duration);
+    void roll(float deg, long duration);
+    void rotate(float deg, long duration, ViewAxis axis);
 
     void showDisplay();
     void hideDisplay();
@@ -48,9 +53,10 @@ public interface Camera {
 
     void attachPlayer(Player player);
     void detachPlayer(Player player);
+    void detachPlayer(Player player, GameMode newGamemode);
     boolean isPlayerAttached(Player player);
 
-    List<Player> getAttachedPlayers();
+    Map<Player, GameMode> getAttachedPlayers();
     Player getAttachedPlayerByID(UUID id);
     Player getAttachedPlayerByName(String name);
 
