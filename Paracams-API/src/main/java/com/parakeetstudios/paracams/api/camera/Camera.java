@@ -53,12 +53,11 @@ public interface Camera {
 
     void attachPlayer(Player player);
     void detachPlayer(Player player);
-    void detachPlayer(Player player, GameMode newGamemode);
     boolean isPlayerAttached(Player player);
 
     void updatePlayerCameras();
 
-    Map<Player, GameMode> getAttachedPlayers();
+    List<Player> getAttachedPlayers();
     Player getAttachedPlayerByID(UUID id);
     Player getAttachedPlayerByName(String name);
 

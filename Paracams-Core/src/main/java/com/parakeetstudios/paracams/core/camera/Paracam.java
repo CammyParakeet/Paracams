@@ -8,6 +8,7 @@ import com.parakeetstudios.paracams.api.registers.CameraRegistry;
 import com.parakeetstudios.paracams.api.utils.ViewAxis;
 
 import com.parakeetstudios.paracams.core.handlers.PlayerHandlers;
+import com.parakeetstudios.paracams.core.registers.PlayerStateRegistry;
 import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -29,7 +30,8 @@ public class Paracam implements Camera {
     private Location position;
     private Location origin;
     private CameraSettings cameraSettings;
-    private final Map<Player, GameMode> attachedPlayers = new HashMap<>();
+    private final List<Player> attachedPlayers = new ArrayList<>();
+    private final PlayerStateRegistry playerStates = new PlayerStateRegistry();
     private final CameraRegistry owningRegistry;
     private final Plugin owningPlugin;
     private final List<AnimationController> animationControllers = new ArrayList<>();; //TODO setup how we do this
@@ -61,13 +63,8 @@ public class Paracam implements Camera {
     }
 
     private void initializeCamera() {
-//        if (this.owningRegistry.getDefaultSettings().isDisplayVisible()) {
-//            this.displayVisible = true;
-//            this.displayEntityHandle = DefaultEntities.createDisplay(position, null);
-//        }
         this.viewEntityHandle = createArmorStandAnchor(position, null);
         this.displayEntityHandle = createCamDisplay(this, DisplayType.HEAD);
-        //this.viewEntityHandle.addPassenger(displayEntityHandle);
     }
 
     public boolean isCustomNamed() {
@@ -97,10 +94,13 @@ public class Paracam implements Camera {
     @Override
     public void setPosition(Location location) {
         updatePlayerCameras();
+
         viewEntityHandle.teleport(location);
+
+        // translation to correct display
         Location displayLocation = location.clone().add(0, 1.75, 0);
         displayEntityHandle.teleport(displayLocation);
-        //viewEntityHandle.addPassenger(displayEntityHandle);
+
         this.position = location;
     }
 
@@ -147,7 +147,7 @@ public class Paracam implements Camera {
     }
 
     @Override
-    public void rotate(float yaw, float pitch, float deg, long duration, ViewAxis axis) {
+    public void rotate(float yaw, float pitch, float roll, long duration, ViewAxis axis) {
         Location newPos = position;
         newPos.setYaw(position.getYaw() + yaw);
         newPos.setPitch(position.getPitch() + pitch);
@@ -158,7 +158,7 @@ public class Paracam implements Camera {
 
     @Override
     public void showDisplay() {
-        this.viewEntityHandle.setCustomNameVisible(true);
+        this.displayEntityHandle.setCustomNameVisible(true);
         this.displayEntityHandle.setVisibleByDefault(true);
         this.displayVisible = true;
         //TODO test if this works well
@@ -166,7 +166,7 @@ public class Paracam implements Camera {
 
     @Override
     public void hideDisplay() {
-        this.viewEntityHandle.setCustomNameVisible(false);
+        this.displayEntityHandle.setCustomNameVisible(false);
         this.displayEntityHandle.setVisibleByDefault(false);
         this.displayVisible = false;
     }
@@ -208,10 +208,9 @@ public class Paracam implements Camera {
 
     @Override
     public void attachPlayer(Player player) {
-        attachedPlayers.put(player, player.getGameMode());
-//        owningPlugin.getServer().getOnlinePlayers().forEach(p -> {
-//            p.hidePlayer(owningPlugin, player);
-//        });
+        attachedPlayers.add(player);
+        playerStates.storePlayerState(player, true);
+
         PlayerHandlers.setCamera(player, viewEntityHandle, owningPlugin, 30L);
 
         // Hide display from viewers
@@ -231,37 +230,35 @@ public class Paracam implements Camera {
 
     @Override
     public void detachPlayer(Player player) {
-        detachPlayer(player, attachedPlayers.get(player));
-    }
-
-    @Override
-    public void detachPlayer(Player player, GameMode mode) {
         attachedPlayers.remove(player);
-        player.setGameMode(mode);
+        playerStates.restorePlayerState(player);
+
+        // TODO if conditions for display
         showDisplayToPlayer(player);
     }
 
+
     @Override
     public boolean isPlayerAttached(Player player) {
-        return (attachedPlayers.containsKey(player));
+        return (attachedPlayers.contains(player));
     }
 
     @Override
     public void updatePlayerCameras() {
-        attachedPlayers.keySet().forEach(player -> {
-
+        attachedPlayers.forEach(player -> {
+            //TODO do we need this still
         });
     }
 
     @Override
-    public Map<Player, GameMode> getAttachedPlayers() {
+    public List<Player> getAttachedPlayers() {
         return this.attachedPlayers;
     }
 
     //TODO do we actually need these ones
     @Override
     public Player getAttachedPlayerByID(UUID id) {
-        if (attachedPlayers.containsKey(owningPlugin.getServer().getPlayer(id))) {
+        if (attachedPlayers.contains(owningPlugin.getServer().getPlayer(id))) {
             return owningPlugin.getServer().getPlayer(id);
         } else {
             return null; // TODO sort this out better

@@ -16,7 +16,7 @@ public class PlayerJoinListener implements Listener {
         // eg in case of if we still want some kind of player -> player interaction
         final Player joinedPlayer = e.getPlayer();
         ParacamsAPI.getInstance().getCameraRegistry().getAllCameras().forEach(camera -> {
-            camera.getAttachedPlayers().keySet().forEach(p -> {
+            camera.getAttachedPlayers().forEach(p -> {
                 joinedPlayer.hidePlayer(ParacamsAPI.getInstance().getPlugin(), p);
             });
         });
