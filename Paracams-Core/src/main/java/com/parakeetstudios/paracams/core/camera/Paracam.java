@@ -7,6 +7,7 @@ import com.parakeetstudios.paracams.api.cinematics.AnimationController;
 import com.parakeetstudios.paracams.api.registers.CameraRegistry;
 import com.parakeetstudios.paracams.api.utils.ViewAxis;
 
+import com.parakeetstudios.paracams.core.handlers.PlayerHandlers;
 import com.parakeetstudios.paracams.core.nms.EntityPacketWrapper;
 import com.parakeetstudios.paracams.core.utils.Paralog;
 import org.bukkit.*;
@@ -65,7 +66,11 @@ public class Paracam implements Camera {
 //            this.displayEntityHandle = DefaultEntities.createDisplay(position, null);
 //        }
         this.viewEntityHandle = createBat(position, null);
-        Paralog.info(viewEntityHandle.getUniqueId().toString());
+        this.displayEntityHandle = createCamDisplay(this, DisplayType.HEAD);
+    }
+
+    private void initAnchorCamera() {
+        this.viewEntityHandle = createArmorStandAnchor(position, null);
         this.displayEntityHandle = createCamDisplay(this, DisplayType.HEAD);
     }
 
@@ -95,6 +100,7 @@ public class Paracam implements Camera {
 
     @Override
     public void setPosition(Location location) {
+        updatePlayerCameras();
         viewEntityHandle.teleport(location);
         displayEntityHandle.teleport(location);
         this.position = location;
@@ -205,12 +211,16 @@ public class Paracam implements Camera {
     @Override
     public void attachPlayer(Player player) {
         attachedPlayers.put(player, player.getGameMode());
-        player.setGameMode(GameMode.SPECTATOR);
-        player.setSpectatorTarget(viewEntityHandle);
+        player.setInvisible(true);
+        PlayerHandlers.setCamera(player, viewEntityHandle, owningPlugin, 30L);
 
         // Hide display from viewers
         hideDisplayFromPlayer(player);
         //TODO extra handling
+    }
+
+    private void updatePlayer(Player player) {
+
     }
 
     @Override

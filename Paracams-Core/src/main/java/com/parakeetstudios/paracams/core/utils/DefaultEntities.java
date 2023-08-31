@@ -5,13 +5,11 @@ import com.destroystokyo.paper.profile.ProfileProperty;
 import com.parakeetstudios.paracams.core.camera.Paracam;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
+import net.minecraft.world.entity.animal.Panda;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.entity.Bat;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.ItemDisplay;
+import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.potion.PotionEffect;
@@ -41,6 +39,27 @@ public class DefaultEntities {
         }
     }
 
+
+    public static ArmorStand createArmorStandAnchor(Location location, String viewSettings) {
+        ArmorStand anchor = location.getWorld().spawn(location, ArmorStand.class);
+
+        anchor.setInvisible(true);
+        anchor.setMarker(true);
+        anchor.setBasePlate(false);
+        anchor.setGravity(false);
+        anchor.setPersistent(false);
+        anchor.setRemoveWhenFarAway(false);
+        anchor.setAI(false);
+        anchor.setCanPickupItems(false);
+        anchor.getChunk().setForceLoaded(true);
+
+        anchor.addScoreboardTag("Paracam");
+        anchor.addScoreboardTag("ParacamAnchor");
+
+        return anchor;
+    }
+
+
     public static Entity createBat(Location location, String viewSettings) {
         //TODO setup settings logic
         Bat batHandle = (Bat) location.getWorld().spawnEntity(location, EntityType.BAT);
@@ -61,9 +80,7 @@ public class DefaultEntities {
         // invisible by default
         // TODO - on a player without certain permission has updategamemode to spectate event, hide the entity from that player
         // TODO - since the ghost will still show
-        batHandle.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, -1, 1, true, false, false));
-
-
+        batHandle.setInvisible(true);
 
         // glowing for dev?
         batHandle.setGlowing(false);
