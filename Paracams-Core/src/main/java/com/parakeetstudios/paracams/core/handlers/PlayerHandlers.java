@@ -4,6 +4,7 @@ import com.parakeetstudios.paracams.api.ParacamsAPI;
 import com.parakeetstudios.paracams.core.utils.NMSUtils;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientboundSetCameraPacket;
+import net.minecraft.network.protocol.game.ServerboundSwingPacket;
 import net.minecraft.server.network.ServerPlayerConnection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -25,11 +26,20 @@ public class PlayerHandlers {
         new BukkitRunnable() {
             @Override
             public void run() {
+                player.setInvisible(true);
                 final ClientboundSetCameraPacket packet = new ClientboundSetCameraPacket(NMSUtils.getEntityHandle(posEntity));
                 sendPlayerPacket(player, packet);
             }
         }.runTaskLater(plugin, delay);
     }
+
+
+    public ServerboundSwingPacket interceptArmSwing(Player player, ServerboundSwingPacket packet) {
+        //TODO permission logic etc for pausing
+
+        return null;
+    }
+
 
     public static void sendPlayerPacket(Player player, Packet<?> packet) {
         NMSUtils.getPlayerHandle(player).connection.send(packet);

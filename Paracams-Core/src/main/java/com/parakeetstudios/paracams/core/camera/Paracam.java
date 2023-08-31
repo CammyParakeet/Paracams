@@ -8,11 +8,10 @@ import com.parakeetstudios.paracams.api.registers.CameraRegistry;
 import com.parakeetstudios.paracams.api.utils.ViewAxis;
 
 import com.parakeetstudios.paracams.core.handlers.PlayerHandlers;
-import com.parakeetstudios.paracams.core.nms.EntityPacketWrapper;
-import com.parakeetstudios.paracams.core.utils.Paralog;
 import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.TextDisplay;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
@@ -43,6 +42,7 @@ public class Paracam implements Camera {
 
     private Entity viewEntityHandle;
     private Entity displayEntityHandle;
+    private TextDisplay displayName;
 
     public Paracam(int cameraID, String name, @NotNull Location position, CameraRegistry registry, Color color) {
         this.cameraID = cameraID;
@@ -65,13 +65,9 @@ public class Paracam implements Camera {
 //            this.displayVisible = true;
 //            this.displayEntityHandle = DefaultEntities.createDisplay(position, null);
 //        }
-        this.viewEntityHandle = createBat(position, null);
-        this.displayEntityHandle = createCamDisplay(this, DisplayType.HEAD);
-    }
-
-    private void initAnchorCamera() {
         this.viewEntityHandle = createArmorStandAnchor(position, null);
         this.displayEntityHandle = createCamDisplay(this, DisplayType.HEAD);
+        //this.viewEntityHandle.addPassenger(displayEntityHandle);
     }
 
     public boolean isCustomNamed() {
@@ -102,7 +98,9 @@ public class Paracam implements Camera {
     public void setPosition(Location location) {
         updatePlayerCameras();
         viewEntityHandle.teleport(location);
-        displayEntityHandle.teleport(location);
+        Location displayLocation = location.clone().add(0, 1.75, 0);
+        displayEntityHandle.teleport(displayLocation);
+        //viewEntityHandle.addPassenger(displayEntityHandle);
         this.position = location;
     }
 
@@ -151,8 +149,8 @@ public class Paracam implements Camera {
     @Override
     public void rotate(float yaw, float pitch, float deg, long duration, ViewAxis axis) {
         Location newPos = position;
-        newPos.setYaw(yaw);
-        newPos.setPitch(pitch);
+        newPos.setYaw(position.getYaw() + yaw);
+        newPos.setPitch(position.getPitch() + pitch);
 
         setPosition(newPos);
     }
@@ -211,7 +209,9 @@ public class Paracam implements Camera {
     @Override
     public void attachPlayer(Player player) {
         attachedPlayers.put(player, player.getGameMode());
-        player.setInvisible(true);
+//        owningPlugin.getServer().getOnlinePlayers().forEach(p -> {
+//            p.hidePlayer(owningPlugin, player);
+//        });
         PlayerHandlers.setCamera(player, viewEntityHandle, owningPlugin, 30L);
 
         // Hide display from viewers
@@ -249,8 +249,7 @@ public class Paracam implements Camera {
     @Override
     public void updatePlayerCameras() {
         attachedPlayers.keySet().forEach(player -> {
-            player.sendMessage("Are you spectating?");
-            EntityPacketWrapper.rotateEntity(player, player.getLocation().getYaw(), player.getLocation().getPitch());
+
         });
     }
 

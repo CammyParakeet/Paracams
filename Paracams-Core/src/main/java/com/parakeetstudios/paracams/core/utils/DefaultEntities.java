@@ -7,6 +7,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import net.minecraft.world.entity.animal.Panda;
 import org.bukkit.Bukkit;
+import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.*;
@@ -44,7 +45,7 @@ public class DefaultEntities {
         ArmorStand anchor = location.getWorld().spawn(location, ArmorStand.class);
 
         anchor.setInvisible(true);
-        anchor.setMarker(true);
+        //anchor.setMarker(true);
         anchor.setBasePlate(false);
         anchor.setGravity(false);
         anchor.setPersistent(false);
@@ -60,7 +61,8 @@ public class DefaultEntities {
     }
 
 
-    public static Entity createBat(Location location, String viewSettings) {
+    //TODO test if this works as well as armorstand
+    public static Entity createBatAnchor(Location location, String viewSettings) {
         //TODO setup settings logic
         Bat batHandle = (Bat) location.getWorld().spawnEntity(location, EntityType.BAT);
 
@@ -91,6 +93,21 @@ public class DefaultEntities {
     }
 
 
+    public static TextDisplay createDisplayName(String name, Location location, Color color) {
+        Matrix M = new Matrix();
+
+        M.setTranslation(0, 1.75f, 0);
+
+        TextDisplay textDisplay = location.getWorld().spawn(location, TextDisplay.class);
+
+        textDisplay.text(Component.text(name));
+        textDisplay.setTransformation(M.toTransformation());
+
+
+        return textDisplay;
+    }
+
+
     public static Entity createCamDisplay(Paracam cam, DisplayType type) {
         Matrix M = new Matrix();
         ItemStack displayItem = new ItemStack(type.getType());
@@ -104,10 +121,15 @@ public class DefaultEntities {
             M.setScale(.25f, .25f, .2f);
         }
 
+        //M.setTranslation(0, 1.75f, 0);
+
         // set and spawn the display entity
         Location location = cam.getPosition();
         ItemDisplay displayHandle = (ItemDisplay) location.getWorld().spawnEntity(location, EntityType.ITEM_DISPLAY);
         displayHandle.setItemStack(displayItem);
+
+        // teleport is needed as far as I know to update the direction vector
+        displayHandle.teleport(location);
 
         // set the transformation
         displayHandle.setTransformation(M.toTransformation());
@@ -115,8 +137,6 @@ public class DefaultEntities {
         // display to FIXED ensures the display faces the correct direction of the entity
         displayHandle.setItemDisplayTransform(ItemDisplay.ItemDisplayTransform.FIXED);
 
-        // teleport is needed as far as I know to update the direction vector
-        displayHandle.teleport(location);
 
         // glowing by default
         displayHandle.setGlowing(true);
