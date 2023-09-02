@@ -129,7 +129,7 @@ public class DefaultEntities {
         displayHandle.setItemStack(displayItem);
 
         // teleport is needed as far as I know to update the direction vector
-        displayHandle.teleport(location);
+        displayHandle.teleport(location.clone().add(0, 1.75, 0));
 
         // set the transformation
         displayHandle.setTransformation(M.toTransformation());

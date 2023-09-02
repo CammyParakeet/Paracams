@@ -36,6 +36,8 @@ public interface Camera {
     void roll(float deg, long duration);
     void rotate(float yaw, float pitch, float deg, long duration, ViewAxis axis);
 
+    void translate(float dist, long duration, ViewAxis axis);
+
     void showDisplay();
     void hideDisplay();
     boolean isDisplayVisible();

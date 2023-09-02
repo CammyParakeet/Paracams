@@ -95,7 +95,7 @@ public class Paracam implements Camera {
     public void setPosition(Location location) {
         updatePlayerCameras();
 
-        viewEntityHandle.teleport(location);
+        Bukkit.getScheduler().runTaskLater(owningPlugin, () -> viewEntityHandle.teleport(location), 0L);
 
         // translation to correct display
         Location displayLocation = location.clone().add(0, 1.75, 0);
@@ -155,6 +155,11 @@ public class Paracam implements Camera {
         setPosition(newPos);
     }
 
+    @Override
+    public void translate(float dist, long duration, ViewAxis axis) {
+        
+    }
+
 
     @Override
     public void showDisplay() {
@@ -211,16 +216,13 @@ public class Paracam implements Camera {
         attachedPlayers.add(player);
         playerStates.storePlayerState(player, true);
 
-        PlayerHandlers.setCamera(player, viewEntityHandle, owningPlugin, 30L);
+        PlayerHandlers.setCamera(player, viewEntityHandle, owningPlugin, 5L);
 
         // Hide display from viewers
         hideDisplayFromPlayer(player);
         //TODO extra handling
     }
 
-    private void updatePlayer(Player player) {
-
-    }
 
     @Override
     public void hideViewForPlayer(Player p) {
