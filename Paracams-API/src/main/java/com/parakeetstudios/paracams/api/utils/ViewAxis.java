@@ -1,24 +1,5 @@
 package com.parakeetstudios.paracams.api.utils;
 
-/**
- * The axis in the camera view plane
- */
+//TODO test if this works with MC locations
 public enum ViewAxis {
-
-    /**
-     * The x axis.
-     * AKA: left and right
-     */
-    X,
-    /**
-     * The y axis.
-     * AKA: up and down
-     */
-    Y,
-    /**
-     * The z axis.
-     * AKA: back and forth
-     */
-    Z;
-
 }

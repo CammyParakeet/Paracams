@@ -5,7 +5,7 @@ import com.parakeetstudios.paracams.api.camera.Camera;
 import com.parakeetstudios.paracams.api.camera.CameraSettings;
 import com.parakeetstudios.paracams.api.cinematics.AnimationController;
 import com.parakeetstudios.paracams.api.registers.CameraRegistry;
-import com.parakeetstudios.paracams.api.utils.ViewAxis;
+import com.parakeetstudios.paracams.api.utils.WorldAxis;
 
 import com.parakeetstudios.paracams.core.handlers.PlayerHandlers;
 import com.parakeetstudios.paracams.core.registers.PlayerStateRegistry;
@@ -14,6 +14,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.TextDisplay;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -133,22 +134,23 @@ public class Paracam implements Camera {
 
     @Override
     public void pan(float deg, long duration) {
-        rotate(deg, 0, 0, duration, ViewAxis.Y);
+        rotate(deg, 0, 0, duration, WorldAxis.Y);
     }
 
     @Override
     public void tilt(float deg, long duration) {
-        rotate(0, deg, 0, duration, ViewAxis.X);
+        rotate(0, deg, 0, duration, WorldAxis.X);
     }
 
     @Override
     public void roll(float deg, long duration) {
-        rotate(0, 0, deg, duration, ViewAxis.Z);
+        rotate(0, 0, deg, duration, WorldAxis.Z);
     }
 
+    //TODO revisit this
     @Override
-    public void rotate(float yaw, float pitch, float roll, long duration, ViewAxis axis) {
-        Location newPos = position;
+    public void rotate(float yaw, float pitch, float roll, long duration, WorldAxis axis) {
+        Location newPos = position.clone();
         newPos.setYaw(position.getYaw() + yaw);
         newPos.setPitch(position.getPitch() + pitch);
 
@@ -156,8 +158,10 @@ public class Paracam implements Camera {
     }
 
     @Override
-    public void translate(float dist, long duration, ViewAxis axis) {
-        
+    public void translate(float delta, long duration, WorldAxis axis) {
+        Vector translation = axis.getDirection().multiply(delta);
+        Location newPos = position.clone().add(translation);
+        setPosition(newPos);
     }
 
 
